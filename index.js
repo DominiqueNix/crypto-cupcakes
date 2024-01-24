@@ -40,11 +40,6 @@ const {
   // create a GET / route handler that sends back Logged in or Logged out
   app.get('/', async (req, res, next) => {
     try{
-      // console.log(req.oidc.user);
-      // let title = document.createElement("H1");
-      // title.appendChild("Welcome to CryptoCupcakes!")
-      // let greeting = document.createElement("H4");
-      // greeting.appendChild(req.oidc.user?.given_name)
       res.send(`
       <h1>Welcome to CryptoCupcakes!</h1>
       <h2>Greetings, ${req.oidc.user.name}!</h2>
