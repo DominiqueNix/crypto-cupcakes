@@ -5,6 +5,7 @@ const app = express();
 const morgan = require('morgan');
 const { PORT = 3000 } = process.env;
 // TODO - require express-openid-connect and destructure auth from it
+const { auth } = require('express-openid-connect');
 
 const { User, Cupcake } = require('./db');
 
@@ -14,12 +15,49 @@ app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 
+
 /* *********** YOUR CODE HERE *********** */
 // follow the module instructions: destructure config environment variables from process.env
+const {
+  AUTH0_SECRET,
+  AUTH0_AUDIENCE,
+  AUTH0_CLIENT_ID,
+  AUTH0_BASE_URL,
+  } = process.env;
 // follow the docs:
   // define the config object
   // attach Auth0 OIDC auth router
+  const config = {
+    authRequired: true, 
+    auth0Logout: true,
+    secret: AUTH0_SECRET,
+    baseURL: AUTH0_AUDIENCE,
+    clientID: AUTH0_CLIENT_ID,
+    issuerBaseURL: AUTH0_BASE_URL,
+  }
+  app.use(auth(config));
+
   // create a GET / route handler that sends back Logged in or Logged out
+  app.get('/', async (req, res, next) => {
+    try{
+      // console.log(req.oidc.user);
+      // let title = document.createElement("H1");
+      // title.appendChild("Welcome to CryptoCupcakes!")
+      // let greeting = document.createElement("H4");
+      // greeting.appendChild(req.oidc.user?.given_name)
+      res.send(`
+      <h1>Welcome to CryptoCupcakes!</h1>
+      <h2>Greetings, ${req.oidc.user.name}!</h2>
+      <p>Username: ${req.oidc.user.nickname}</p>
+      <p>${req.oidc.user.email}</p>
+      <img src=${req.oidc.user.picture} />
+      `)
+
+    }catch(error){
+      console.error(error);
+      next(error);
+    }
+  })
 
 app.get('/cupcakes', async (req, res, next) => {
   try {
